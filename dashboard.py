@@ -10,7 +10,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import requests
+import os
 from io import StringIO
+
+os.environ["NUMBA_THREADING_LAYER"] = "tbb"
 
 # Função para baixar e carregar os dados
 @st.cache_data

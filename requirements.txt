@@ -6,3 +6,4 @@ watchdog
 umap-learn
 seaborn
 statsmodels
+tbb
