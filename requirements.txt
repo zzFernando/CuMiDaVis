@@ -12,3 +12,6 @@ bokeh==2.4.3
 networkx
 setuptools
 wheel
+numpy>=1.21,<1.25
+numba>=0.55
+llvmlite>=0.39.0
