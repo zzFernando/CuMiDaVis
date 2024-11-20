@@ -9,19 +9,34 @@ import plotly.graph_objects as go
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import requests
+from io import StringIO
 
-# Carregar os dados
+# Função para baixar e carregar os dados
 @st.cache_data
-def load_data(file_path):
-    data = pd.read_csv(file_path)
+def load_data_from_url(url):
+    response = requests.get(url)
+    response.raise_for_status()  # Verifica se o download foi bem-sucedido
+    csv_data = StringIO(response.text)
+    data = pd.read_csv(csv_data)
     return data
 
-file_path = "Breast_GSE70947 (1).csv"
-data = load_data(file_path)
+# URLs dos datasets
+datasets = {
+    "Liver": "https://sbcb.inf.ufrgs.br/data/cumida/Genes/Liver/GSE14520_U133A/Liver_GSE14520_U133A.csv",
+    "Breast": "https://sbcb.inf.ufrgs.br/data/cumida/Genes/Breast/GSE70947/Breast_GSE70947.csv",
+    "Prostate": "https://sbcb.inf.ufrgs.br/data/cumida/Genes/Prostate/GSE6919_U95Av2/Prostate_GSE6919_U95Av2.csv",
+}
 
-# Configurações do Streamlit
-st.title("Dashboard Interativo de Dados Genômicos")
+# Seleção do dataset pelo usuário
 st.sidebar.title("Configurações")
+dataset_choice = st.sidebar.selectbox("Selecione o Dataset", options=list(datasets.keys()), index=0)
+data_url = datasets[dataset_choice]
+
+# Carregar os dados selecionados
+st.title(f"Dashboard Interativo - {dataset_choice} Dataset")
+st.sidebar.write(f"Carregando dataset: {dataset_choice}")
+data = load_data_from_url(data_url)
 
 # Configuração para seleção de genes
 use_all_genes = st.sidebar.checkbox("Usar todos os genes?", value=True)
