@@ -28,7 +28,7 @@ def plot_tsne(data, normalized_data, perplexity):
     st.plotly_chart(fig, use_container_width=True)
 
 def plot_umap(data, normalized_data, n_neighbors, min_dist):
-    umap_result = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, random_state=42).fit_transform(normalized_data)
+    umap_result = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist).fit_transform(normalized_data)
     data['UMAP1'], data['UMAP2'] = umap_result.T
     fig = px.scatter(data, x='UMAP1', y='UMAP2', color='type', hover_data=['samples'],
                      title="UMAP - 2 Componentes", color_discrete_sequence=px.colors.qualitative.Set3)
