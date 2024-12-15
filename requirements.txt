@@ -15,3 +15,5 @@ wheel
 numpy>=1.21,<1.25
 numba>=0.55
 llvmlite>=0.39.0
+bs4
+beautifulsoup
