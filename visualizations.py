@@ -6,16 +6,12 @@ from sklearn.manifold import TSNE
 import umap
 import matplotlib.pyplot as plt
 
-
-
 def plot_3d_pca(data, normalized_data):
     pca_3d = PCA(n_components=3).fit_transform(normalized_data)
     data['PCA1'], data['PCA2'], data['PCA3'] = pca_3d.T
     fig = px.scatter_3d(data, x='PCA1', y='PCA2', z='PCA3', color='type', hover_data=['samples'],
                         title="Projeção PCA em 3D", color_discrete_sequence=px.colors.qualitative.Set3)
     st.plotly_chart(fig, use_container_width=True)
-
-
 
 def plot_2d_pca(data, normalized_data):
     pca_2d = PCA(n_components=2).fit_transform(normalized_data)
@@ -24,27 +20,12 @@ def plot_2d_pca(data, normalized_data):
                      title="PCA - 2 Componentes", color_discrete_sequence=px.colors.qualitative.Set3)
     st.plotly_chart(fig, use_container_width=True)
 
-
-
-def compute_tsne(normalized_data, perplexity):
-    tsne_result = TSNE(n_components=2, perplexity=perplexity, random_state=42).fit_transform(normalized_data)
-    return tsne_result
-
-
-
 def plot_tsne(data, normalized_data, perplexity):
-    tsne_result = compute_tsne(normalized_data, perplexity)
+    tsne_result = TSNE(n_components=2, perplexity=perplexity, random_state=42).fit_transform(normalized_data)
     data['tSNE1'], data['tSNE2'] = tsne_result.T
-    fig = px.scatter(data, x='tSNE1', y='tSNE2', color='type', title="t-SNE Visualization")
+    fig = px.scatter(data, x='tSNE1', y='tSNE2', color='type', hover_data=['samples'],
+                     title="t-SNE - 2 Componentes", color_discrete_sequence=px.colors.qualitative.Set3)
     st.plotly_chart(fig, use_container_width=True)
-
-
-
-def compute_umap(normalized_data, n_neighbors, min_dist):
-    umap_result = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, random_state=42).fit_transform(normalized_data)
-    return umap_result
-
-
 
 def plot_umap(data, normalized_data, n_neighbors, min_dist):
     umap_result = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist).fit_transform(normalized_data)
@@ -53,26 +34,10 @@ def plot_umap(data, normalized_data, n_neighbors, min_dist):
                      title="UMAP - 2 Componentes", color_discrete_sequence=px.colors.qualitative.Set3)
     st.plotly_chart(fig, use_container_width=True)
 
-
-
-@st.cache_data
-def plot_heatmap(normalized_data, _selected_columns, heatmap_limit):
-    """
-    Plota um heatmap de correlação baseado no número máximo de genes definido.
-
-    Args:
-        normalized_data (ndarray): Dados normalizados.
-        _selected_columns (list): Colunas selecionadas para visualização.
-        heatmap_limit (int): Número máximo de genes a serem exibidos no heatmap.
-    """
-    limited_columns = _selected_columns[:heatmap_limit]
-    limited_data = normalized_data[:, :heatmap_limit]
-    
-    corr_matrix = pd.DataFrame(limited_data, columns=limited_columns).corr()
-    fig = px.imshow(corr_matrix, text_auto=True, title="Heatmap de Correlação",
-                    labels=dict(color="Correlação"))
+def plot_heatmap(normalized_data, selected_columns, heatmap_limit):
+    corr_matrix = pd.DataFrame(normalized_data[:, :heatmap_limit], columns=selected_columns[:heatmap_limit]).corr()
+    fig = px.imshow(corr_matrix, text_auto=True, title="Heatmap de Correlação", labels=dict(color="Correlação"))
     st.plotly_chart(fig, use_container_width=True)
-
 
 def plot_violin(data, selected_gene):
     """
@@ -91,7 +56,6 @@ def plot_violin(data, selected_gene):
         labels={"type": "Tipo", selected_gene: "Expressão Gênica"}
     )
     st.plotly_chart(fig_violin, use_container_width=True)
-
 
 
 def plot_scatterplot_matrix(data, normalized_data, selected_columns, scatterplot_limit):
@@ -116,7 +80,6 @@ def plot_scatterplot_matrix(data, normalized_data, selected_columns, scatterplot
     st.plotly_chart(fig_matrix, use_container_width=True)
 
 
-
 def plot_parallel_coordinates(data, normalized_data, selected_columns):
     parallel_data = pd.DataFrame(normalized_data[:, :10], columns=selected_columns[:10])
     parallel_data['type'] = data['type']
@@ -129,8 +92,6 @@ def plot_parallel_coordinates(data, normalized_data, selected_columns):
         title="Parallel Coordinates Plot"
     )
     st.plotly_chart(fig_parallel, use_container_width=True)
-
-
 
 def plot_bar_chart(data, selected_columns):
     """
@@ -145,8 +106,6 @@ def plot_bar_chart(data, selected_columns):
     )
     st.plotly_chart(fig_bar, use_container_width=True)
 
-
-
 def plot_line_chart(data, selected_columns):
     selected_gene = st.sidebar.selectbox("Selecione um Gene para o Gráfico de Linhas:", selected_columns)
     fig_line = px.line(
@@ -155,8 +114,6 @@ def plot_line_chart(data, selected_columns):
         labels={"samples": "Amostras", selected_gene: "Expressão Gênica"}
     )
     st.plotly_chart(fig_line, use_container_width=True)
-
-
 
 def plot_regression(data, selected_columns):
     reg_x = st.sidebar.selectbox("Selecione o Eixo X (Regressão):", selected_columns)
